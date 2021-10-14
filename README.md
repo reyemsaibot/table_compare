@@ -5,6 +5,8 @@ Compare two tables and display different entries
 
 The example program select in the source table infoobjects from the table rsdiobj which are active in the system. The target table select all infoobjects from the table rsdiobj. The comparison class creates an internal table with a color column to display the color in an ALV grid.
 
+As you see in the below, the source table has all active records and the target table has active, modified and delivered records. The result is that all delivered and modified records are displayed in red because they do not appear in the source table.
+
 Per default the key fields of the table will be choosen to compare the data. But you can add own key fields you want to consider. Just fill the paramter it_key_fields. 
 
 You can display the data directly in an ALV grid (default: false) or export it and use it in your logic for further analysis.
