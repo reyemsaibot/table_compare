@@ -1,0 +1,32 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<abapGit version="v1.0.0" serializer="LCL_OBJECT_MSAG" serializer_version="v1.0.0">
+ <asx:abap xmlns:asx="http://www.sap.com/abapxml" version="1.0">
+  <asx:values>
+   <T100A>
+    <ARBGB>ZMC_TC</ARBGB>
+    <MASTERLANG>E</MASTERLANG>
+    <STEXT>Message Table Compare</STEXT>
+   </T100A>
+   <T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMC_TC</ARBGB>
+     <MSGNR>001</MSGNR>
+     <TEXT>General Error in Table Comparing</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMC_TC</ARBGB>
+     <MSGNR>002</MSGNR>
+     <TEXT>The value &amp;1 could not be assigned in method &amp;2.</TEXT>
+    </T100>
+    <T100>
+     <SPRSL>E</SPRSL>
+     <ARBGB>ZMC_TC</ARBGB>
+     <MSGNR>003</MSGNR>
+     <TEXT>The value &amp;1 of structure &amp;2 could not be assigned in method &amp;3.</TEXT>
+    </T100>
+   </T100>
+  </asx:values>
+ </asx:abap>
+</abapGit>

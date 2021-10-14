@@ -1,0 +1,23 @@
+{
+  "name": "TABLE_COMPARE",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Compare of two tables and determine the differences",
+  "main": "index.js",
+  "scripts": {
+    "lint": "abaplint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/reyemsaibot/table_compare.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/reyemsaibot/table_compare/issues"
+  },
+  "homepage": "https://github.com/reyemsaibot/table_compare#readme",
+  "dependencies": {
+    "@abaplint/cli": "^2.79.29"
+  }
+}
