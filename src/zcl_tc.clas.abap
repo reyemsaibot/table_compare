@@ -2,12 +2,12 @@
 CLASS zcl_tc DEFINITION
   PUBLIC
   FINAL
-  CREATE PUBLIC.
+  CREATE PUBLIC .
 
   PUBLIC SECTION.
 
     TYPES:
-    ty_t_fields TYPE STANDARD TABLE OF name_komp WITH EMPTY KEY .
+      ty_t_fields TYPE STANDARD TABLE OF name_komp WITH EMPTY KEY .
 
     "! <p class="shorttext synchronized" lang="en"></p>
     "!
@@ -18,27 +18,27 @@ CLASS zcl_tc DEFINITION
     "! @parameter et_table | <p class="shorttext synchronized" lang="en">Table with color column</p>
     "! @raising zcx_tc | <p class="shorttext synchronized" lang="en">Raise Exception</p>
     METHODS compare_tables
-    IMPORTING
-      !it_table_old TYPE STANDARD TABLE
-      !it_table_new TYPE STANDARD TABLE
-      !it_key_fields TYPE ty_t_fields OPTIONAL
-      !iv_display TYPE rs_bool DEFAULT rs_c_false
-    EXPORTING
-      !et_table TYPE STANDARD TABLE
-    RAISING
-      zcx_tc .
+      IMPORTING
+        !it_table_old  TYPE STANDARD TABLE
+        !it_table_new  TYPE STANDARD TABLE
+        !it_key_fields TYPE ty_t_fields OPTIONAL
+        !iv_display    TYPE rs_bool DEFAULT rs_c_false
+      EXPORTING
+        !et_table      TYPE STANDARD TABLE
+      RAISING
+        zcx_tc .
     "! <p class="shorttext synchronized" lang="en"></p>
     "!
     "! @parameter it_key_fields | <p class="shorttext synchronized" lang="en">Save table of key fields</p>
     METHODS set_key_fields
-    IMPORTING
-      !it_key_fields TYPE ty_t_fields .
+      IMPORTING
+        !it_key_fields TYPE ty_t_fields .
     "! <p class="shorttext synchronized" lang="en"></p>
     "!
     "! @parameter rt_key_fields | <p class="shorttext synchronized" lang="en">Get table of key fields</p>
     METHODS get_key_fields
-    RETURNING
-      VALUE(rt_key_fields) TYPE ty_t_fields .
+      RETURNING
+        VALUE(rt_key_fields) TYPE ty_t_fields .
   PROTECTED SECTION.
   PRIVATE SECTION.
 
@@ -103,10 +103,10 @@ CLASS zcl_tc IMPLEMENTATION.
     DATA(lt_fieldlist) = lo_structure->get_ddic_field_list( ).
 
     IF it_key_fields[] IS NOT INITIAL.
-      "TODO
+      DATA(lt_key_fields) = it_key_fields.
     ELSE.
       " Get a list of key fields from the list of all fields
-      DATA(lt_key_fields) = VALUE ty_t_fields( FOR <ls_fields> IN lt_fieldlist WHERE ( keyflag = rs_c_true ) ( <ls_fields>-fieldname ) ).
+      lt_key_fields = VALUE ty_t_fields( FOR <ls_fields> IN lt_fieldlist WHERE ( keyflag = rs_c_true ) ( <ls_fields>-fieldname ) ).
     ENDIF.
 
     set_key_fields( lt_key_fields ).
@@ -116,7 +116,7 @@ CLASS zcl_tc IMPLEMENTATION.
     DATA(lt_key_components) = lt_components.
 
     " Build range table for key field
-    lt_key_fields_range = VALUE #( FOR <ls_key_fields> IN lt_key_fields ( low = <ls_key_fields> sign = 'I' option = 'EQ' ) ).
+    lt_key_fields_range = VALUE #( FOR <ls_key_fields> IN lt_key_fields ( low = <ls_key_fields> sign = 'I' option = 'EQ') ).
     DELETE lt_key_components WHERE NOT name IN lt_key_fields_range.
     DELETE lt_components WHERE name IN lt_key_fields_range.
 
@@ -129,8 +129,8 @@ CLASS zcl_tc IMPLEMENTATION.
         <ls_components>-type = lo_key_fields_structure.
         DATA(lo_table_data_structure) = cl_abap_structdescr=>create( lt_components ).
         DATA(lo_table_data_table) = cl_abap_tabledescr=>create( lo_table_data_structure ).
-      CATCH cx_sy_struct_creation.
-        "TODO
+      CATCH cx_sy_struct_creation INTO DATA(lcx_creation).
+        MESSAGE lcx_creation->get_text( ) TYPE 'E'.
     ENDTRY.
 
     " Build internal table which has the key field record to comapre
@@ -305,7 +305,7 @@ CLASS zcl_tc IMPLEMENTATION.
 
 
   METHOD _create_compare_table.
-
+    DATA: ls_cx_exception TYPE scx_t100key.
     DATA: lr_tabledescr TYPE REF TO cl_abap_tabledescr.
     DATA: lr_table TYPE REF TO data.
     DATA: lr_table_old TYPE REF TO data.
@@ -321,22 +321,36 @@ CLASS zcl_tc IMPLEMENTATION.
     " Assign compare table
     ASSIGN lr_table->* TO <lt_table>.
     IF sy-subrc <> 0.
-      " TODO
-
+      ls_cx_exception-msgid = 'ZMC_TC'.
+      ls_cx_exception-msgno = '002'.
+      ls_cx_exception-attr1 = |lr_table|.
+      ls_cx_exception-attr2 = |_create_compare_table|.
+      DATA(lo_exception) = NEW zcx_tc( textid = ls_cx_exception ).
+      RAISE EXCEPTION lo_exception.
       RETURN.
     ENDIF.
 
     " Assign old table
     ASSIGN lr_table_old->* TO FIELD-SYMBOL(<lt_table_old>).
     IF sy-subrc <> 0.
-      " TODO
+      ls_cx_exception-msgid = 'ZMC_TC'.
+      ls_cx_exception-msgno = '002'.
+      ls_cx_exception-attr1 = |lr_table_old|.
+      ls_cx_exception-attr2 = |_create_compare_table|.
+      lo_exception = NEW zcx_tc( textid = ls_cx_exception ).
+      RAISE EXCEPTION lo_exception.
       RETURN.
     ENDIF.
 
     " Assign new table
     ASSIGN lr_table_new->* TO FIELD-SYMBOL(<lt_table_new>).
     IF sy-subrc <> 0.
-      " TODO
+      ls_cx_exception-msgid = 'ZMC_TC'.
+      ls_cx_exception-msgno = '002'.
+      ls_cx_exception-attr1 = |lr_table_new|.
+      ls_cx_exception-attr2 = |_create_compare_table|.
+      lo_exception = NEW zcx_tc( textid = ls_cx_exception ).
+      RAISE EXCEPTION lo_exception.
       RETURN.
     ENDIF.
 
