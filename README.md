@@ -1,3 +1,5 @@
+![](https://img.shields.io/badge/ABAP-v7.5%20SP16-orange) [![abaplint](https://github.com/reyemsaibot/table_compare/workflows/abaplint/badge.svg)](https://github.com/reyemsaibot/table_compare/actions) [![Updated Badge](https://badges.pufler.dev/updated/reyemsaibot/table_compare)](https://badges.pufler.dev) [![Created Badge](https://badges.pufler.dev/created/reyemsaibot/table_compare)](https://badges.pufler.dev) 
+
 # Table Compare 
 Compare two tables and display different entries
 
@@ -19,12 +21,14 @@ The method `compare_tables` has the following parameter:
  - iv_display
  - et_table
 
+```abap
 SELECT * FROM rsdiobj INTO TABLE @DATA(lt_source) WHERE objvers = 'A'.
 SELECT * FROM rsdiobj INTO TABLE @DATA(lt_target).
 
-NEW zcl_compare_tables( )->compare_tables( it_table_old = `your_source_table`<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;it_table_new = `your_target_table`<br>
-&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;iv_display   = rs_c_true ).
+NEW zcl_compare_tables( )->compare_tables( it_table_old = `your_source_table`
+  it_table_new = `your_target_table`
+  iv_display   = rs_c_true ).
+```
                                                                 
 This is the result of an ALV grid
 ![image](https://user-images.githubusercontent.com/6608522/137296239-36176d64-1c4c-4978-915b-f4d8beff511d.png)
