@@ -1,13 +1,13 @@
 "#autoformat
-class ZCL_TC definition
-  public
-  final
-  create public .
+CLASS zcl_tc DEFINITION
+  PUBLIC
+  FINAL
+  CREATE PUBLIC.
 
-public section.
+  PUBLIC SECTION.
 
-  types:
-    ty_t_fields TYPE STANDARD TABLE OF name_komp WITH EMPTY KEY .
+    TYPES:
+      ty_t_fields TYPE STANDARD TABLE OF name_komp WITH EMPTY KEY.
 
     "! <p class="shorttext synchronized" lang="en"></p>
     "!
@@ -17,39 +17,42 @@ public section.
     "! @parameter iv_display | <p class="shorttext synchronized" lang="en">Display data in ALV grid (default: &lt;strong&gt;false&lt;/strong&gt;)</p>
     "! @parameter et_table | <p class="shorttext synchronized" lang="en">Table with color column</p>
     "! @raising zcx_tc | <p class="shorttext synchronized" lang="en">Raise Exception</p>
-  methods COMPARE_TABLES
-    importing
-      !IT_TABLE_OLD type STANDARD TABLE
-      !IT_TABLE_NEW type STANDARD TABLE
-      !IT_KEY_FIELDS type TY_T_FIELDS optional
-      !IV_DISPLAY type RS_BOOL default RS_C_FALSE
-    exporting
-      !ET_TABLE type STANDARD TABLE
-    raising
-      ZCX_TC .
+    METHODS compare_tables
+      IMPORTING
+        !it_table_old TYPE STANDARD TABLE
+        !it_table_new TYPE STANDARD TABLE
+        !it_key_fields TYPE ty_t_fields OPTIONAL
+        !iv_display TYPE rs_bool DEFAULT rs_c_false
+      EXPORTING
+        !et_table TYPE STANDARD TABLE
+      RAISING
+        zcx_tc.
+
     "! <p class="shorttext synchronized" lang="en"></p>
     "!
     "! @parameter it_key_fields | <p class="shorttext synchronized" lang="en">Save table of key fields</p>
-  methods SET_KEY_FIELDS
-    importing
-      !IT_KEY_FIELDS type TY_T_FIELDS .
+    METHODS set_key_fields
+      IMPORTING
+        !it_key_fields TYPE ty_t_fields.
+
     "! <p class="shorttext synchronized" lang="en"></p>
     "!
     "! @parameter rt_key_fields | <p class="shorttext synchronized" lang="en">Get table of key fields</p>
-  methods GET_KEY_FIELDS
-    returning
-      value(RT_KEY_FIELDS) type TY_T_FIELDS .
+    METHODS get_key_fields
+      RETURNING
+        VALUE(rt_key_fields) TYPE ty_t_fields.
+
     "! <p class="shorttext synchronized" lang="en"></p>
     "!
     "! @parameter it_table | <p class="shorttext synchronized" lang="en">Table to expand</p>
     "! @parameter eo_table_with_color | <p class="shorttext synchronized" lang="en">Import table with new column color</p>
     "! @parameter eo_structure_with_color | <p class="shorttext synchronized" lang="en">Structure with new column color</p>
-  methods ADD_COLOR_COLUMN
-    importing
-      !IT_TABLE type ANY TABLE
-    exporting
-      !EO_TABLE_WITH_COLOR type ref to CL_ABAP_TABLEDESCR
-      !EO_STRUCTURE_WITH_COLOR type ref to CL_ABAP_STRUCTDESCR .
+    METHODS add_color_column
+      IMPORTING
+        !it_table TYPE ANY TABLE
+      EXPORTING
+        !eo_table_with_color TYPE REF TO cl_abap_tabledescr
+        !eo_structure_with_color TYPE REF TO cl_abap_structdescr.
   PROTECTED SECTION.
   PRIVATE SECTION.
 
@@ -82,7 +85,7 @@ ENDCLASS.
 
 
 
-CLASS ZCL_TC IMPLEMENTATION.
+CLASS zcl_tc IMPLEMENTATION.
 
 
   METHOD add_color_column.
