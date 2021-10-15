@@ -1,13 +1,13 @@
 "#autoformat
-CLASS zcl_tc DEFINITION
-  PUBLIC
-  FINAL
-  CREATE PUBLIC .
+class ZCL_TC definition
+  public
+  final
+  create public .
 
-  PUBLIC SECTION.
+public section.
 
-    TYPES:
-      ty_t_fields TYPE STANDARD TABLE OF name_komp WITH EMPTY KEY .
+  types:
+    ty_t_fields TYPE STANDARD TABLE OF name_komp WITH EMPTY KEY .
 
     "! <p class="shorttext synchronized" lang="en"></p>
     "!
@@ -17,28 +17,39 @@ CLASS zcl_tc DEFINITION
     "! @parameter iv_display | <p class="shorttext synchronized" lang="en">Display data in ALV grid (default: &lt;strong&gt;false&lt;/strong&gt;)</p>
     "! @parameter et_table | <p class="shorttext synchronized" lang="en">Table with color column</p>
     "! @raising zcx_tc | <p class="shorttext synchronized" lang="en">Raise Exception</p>
-    METHODS compare_tables
-      IMPORTING
-        !it_table_old  TYPE STANDARD TABLE
-        !it_table_new  TYPE STANDARD TABLE
-        !it_key_fields TYPE ty_t_fields OPTIONAL
-        !iv_display    TYPE rs_bool DEFAULT rs_c_false
-      EXPORTING
-        !et_table      TYPE STANDARD TABLE
-      RAISING
-        zcx_tc .
+  methods COMPARE_TABLES
+    importing
+      !IT_TABLE_OLD type STANDARD TABLE
+      !IT_TABLE_NEW type STANDARD TABLE
+      !IT_KEY_FIELDS type TY_T_FIELDS optional
+      !IV_DISPLAY type RS_BOOL default RS_C_FALSE
+    exporting
+      !ET_TABLE type STANDARD TABLE
+    raising
+      ZCX_TC .
     "! <p class="shorttext synchronized" lang="en"></p>
     "!
     "! @parameter it_key_fields | <p class="shorttext synchronized" lang="en">Save table of key fields</p>
-    METHODS set_key_fields
-      IMPORTING
-        !it_key_fields TYPE ty_t_fields .
+  methods SET_KEY_FIELDS
+    importing
+      !IT_KEY_FIELDS type TY_T_FIELDS .
     "! <p class="shorttext synchronized" lang="en"></p>
     "!
     "! @parameter rt_key_fields | <p class="shorttext synchronized" lang="en">Get table of key fields</p>
-    METHODS get_key_fields
-      RETURNING
-        VALUE(rt_key_fields) TYPE ty_t_fields .
+  methods GET_KEY_FIELDS
+    returning
+      value(RT_KEY_FIELDS) type TY_T_FIELDS .
+    "! <p class="shorttext synchronized" lang="en"></p>
+    "!
+    "! @parameter it_table | <p class="shorttext synchronized" lang="en">Table to expand</p>
+    "! @parameter eo_table_with_color | <p class="shorttext synchronized" lang="en">Import table with new column color</p>
+    "! @parameter eo_structure_with_color | <p class="shorttext synchronized" lang="en">Structure with new column color</p>
+  methods ADD_COLOR_COLUMN
+    importing
+      !IT_TABLE type ANY TABLE
+    exporting
+      !EO_TABLE_WITH_COLOR type ref to CL_ABAP_TABLEDESCR
+      !EO_STRUCTURE_WITH_COLOR type ref to CL_ABAP_STRUCTDESCR .
   PROTECTED SECTION.
   PRIVATE SECTION.
 
@@ -53,14 +64,9 @@ CLASS zcl_tc DEFINITION
         it_table_old TYPE STANDARD TABLE
         it_table_new TYPE STANDARD TABLE
       EXPORTING
-        et_table     TYPE STANDARD TABLE.
-
-    METHODS _create_color_column
-      IMPORTING
-        it_table                TYPE ANY TABLE
-      EXPORTING
-        eo_table_with_color     TYPE REF TO cl_abap_tabledescr
-        eo_structure_with_color TYPE REF TO cl_abap_structdescr.
+        et_table     TYPE STANDARD TABLE
+      RAISING
+        zcx_tc.
 
     METHODS _set_color
       CHANGING
@@ -76,7 +82,43 @@ ENDCLASS.
 
 
 
-CLASS zcl_tc IMPLEMENTATION.
+CLASS ZCL_TC IMPLEMENTATION.
+
+
+  METHOD add_color_column.
+    TYPES: BEGIN OF ty_color,
+             color TYPE lvc_t_scol,
+           END OF ty_color.
+
+    DATA: ls_color TYPE ty_color.
+    DATA: lo_table TYPE REF TO cl_abap_tabledescr.
+    DATA: lo_strucdescr TYPE REF TO cl_abap_structdescr.
+
+    lo_table ?= cl_abap_typedescr=>describe_by_data( it_table ).
+    lo_strucdescr ?= lo_table->get_table_line_type( ).
+
+    " Get all fields of structure
+    DATA(lt_components) = lo_strucdescr->get_components( ).
+
+    " Get color column and append it to the other fields
+    lo_strucdescr ?= cl_abap_typedescr=>describe_by_data( ls_color ).
+    APPEND LINES OF lo_strucdescr->get_components( ) TO lt_components.
+
+    " Create a new structure with the new component table
+    TRY.
+        eo_structure_with_color = cl_abap_structdescr=>create( lt_components ).
+      CATCH cx_sy_struct_creation INTO DATA(lcx_structure).
+        MESSAGE lcx_structure->get_text( ) TYPE 'E'.
+    ENDTRY.
+
+    " Create new table with color column
+    TRY.
+        eo_table_with_color = cl_abap_tabledescr=>create( eo_structure_with_color ).
+      CATCH cx_sy_table_creation INTO DATA(lcx_table).
+        MESSAGE lcx_table->get_text( ) TYPE 'E'.
+    ENDTRY.
+
+  ENDMETHOD.
 
 
   METHOD compare_tables.
@@ -171,14 +213,18 @@ CLASS zcl_tc IMPLEMENTATION.
     ENDIF.
 
     " Create compare table
-    _create_compare_table( EXPORTING it_table_old = it_table_old
-                                     it_table_new = it_table_new
-                           IMPORTING et_table     = <lt_t_data_compare> ).
+    TRY.
+        _create_compare_table( EXPORTING it_table_old = it_table_old
+                                         it_table_new = it_table_new
+                               IMPORTING et_table     = <lt_t_data_compare> ).
+      CATCH zcx_tc INTO DATA(lcx_tc).
+        MESSAGE lcx_tc->get_text( ) TYPE 'E'.
+    ENDTRY.
 
     " Add color column to compare table
-    _create_color_column( EXPORTING it_table                = <lt_t_data_compare>
-                          IMPORTING eo_table_with_color     = DATA(lo_table_compare_with_color)
-                                    eo_structure_with_color = DATA(lo_s_compare_with_color) ).
+    add_color_column( EXPORTING it_table                = <lt_t_data_compare>
+                      IMPORTING eo_table_with_color     = DATA(lo_table_compare_with_color)
+                                eo_structure_with_color = DATA(lo_s_compare_with_color) ).
 
     " Build new compare table with key and color column
     CREATE DATA lo_t_data_compare TYPE HANDLE lo_table_compare_with_color.
@@ -265,42 +311,6 @@ CLASS zcl_tc IMPLEMENTATION.
 
   METHOD set_key_fields.
     me->mt_key_fields = it_key_fields.
-  ENDMETHOD.
-
-
-  METHOD _create_color_column.
-    TYPES: BEGIN OF ty_color,
-             color TYPE lvc_t_scol,
-           END OF ty_color.
-
-    DATA: ls_color TYPE ty_color.
-    DATA: lo_table TYPE REF TO cl_abap_tabledescr.
-    DATA: lo_strucdescr TYPE REF TO cl_abap_structdescr.
-
-    lo_table ?= cl_abap_typedescr=>describe_by_data( it_table ).
-    lo_strucdescr ?= lo_table->get_table_line_type( ).
-
-    " Get all fields of structure
-    DATA(lt_components) = lo_strucdescr->get_components( ).
-
-    " Get color column and append it to the other fields
-    lo_strucdescr ?= cl_abap_typedescr=>describe_by_data( ls_color ).
-    APPEND LINES OF lo_strucdescr->get_components( ) TO lt_components.
-
-    " Create a new structure with the new component table
-    TRY.
-        eo_structure_with_color = cl_abap_structdescr=>create( lt_components ).
-      CATCH cx_sy_struct_creation INTO DATA(lcx_structure).
-        MESSAGE lcx_structure->get_text( ) TYPE 'E'.
-    ENDTRY.
-
-    " Create new table with color column
-    TRY.
-        eo_table_with_color = cl_abap_tabledescr=>create( eo_structure_with_color ).
-      CATCH cx_sy_table_creation INTO DATA(lcx_table).
-        MESSAGE lcx_table->get_text( ) TYPE 'E'.
-    ENDTRY.
-
   ENDMETHOD.
 
 
@@ -419,7 +429,6 @@ CLASS zcl_tc IMPLEMENTATION.
         RAISE EXCEPTION lo_exception.
       ENDIF.
 
-
       ASSIGN COMPONENT 'COLOR' OF STRUCTURE cs_data_compare TO <lt_color>.
       IF sy-subrc <> 0.
         ls_cx_exception-msgid = 'ZMC_TC'.
@@ -430,7 +439,6 @@ CLASS zcl_tc IMPLEMENTATION.
         lo_exception = NEW zcx_tc( textid = ls_cx_exception ).
         RAISE EXCEPTION lo_exception.
       ENDIF.
-
 
       CREATE DATA lo_color LIKE LINE OF <lt_color>.
       ASSIGN lo_color->* TO FIELD-SYMBOL(<ls_color>).

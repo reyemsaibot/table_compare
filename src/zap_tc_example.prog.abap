@@ -10,8 +10,11 @@
 * Change log
 **********************************************************************
 * 14.10.21 TM initial version
+* 15.10.21 TM Add logic for color column
 **********************************************************************
 REPORT zap_tc_example.
+
+DATA: lo_table TYPE REF TO data.
 
 FIELD-SYMBOLS: <lt_table> TYPE STANDARD TABLE.
 
@@ -29,6 +32,11 @@ ENDTRY.
 
 "Example with export table for further processing
 
+NEW zcl_tc( )->add_color_column( EXPORTING it_table            = lt_source
+                                 IMPORTING eo_table_with_color = DATA(lo_table_with_color) ).
+
+CREATE DATA lo_table TYPE HANDLE lo_table_with_color.
+ASSIGN lo_table->* TO <lt_table>.
 
 TRY.
     NEW zcl_tc( )->compare_tables( EXPORTING it_table_old  = lt_source
@@ -37,3 +45,5 @@ TRY.
   CATCH zcx_tc INTO lcx_tc.
     MESSAGE lcx_tc->get_text( ) TYPE 'E'.
 ENDTRY.
+
+" Do some stuff with the internal table <lt_table>
