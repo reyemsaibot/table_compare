@@ -1,4 +1,4 @@
-![](https://img.shields.io/badge/ABAP-v7.5%20SP16-orange)
+![](https://img.shields.io/badge/ABAP-v7.5%20SP16-orange) [![abaplint](https://github.com/reyemsaibot/table_compare/workflows/abaplint/badge.svg)](https://github.com/reyemsaibot/table_compare/actions) [![Updated Badge](https://badges.pufler.dev/updated/reyemsaibot/table_compare)](https://badges.pufler.dev) [![Created Badge](https://badges.pufler.dev/created/reyemsaibot/table_compare)](https://badges.pufler.dev) 
 
 # Table Compare 
 Compare two tables and display different entries
